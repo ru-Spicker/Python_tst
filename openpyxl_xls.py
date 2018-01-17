@@ -1,6 +1,7 @@
 import xlrd
 from itertools import groupby
 from os import listdir
+from re import match
 
 ''' Опрделяем номера столбцов для нужных полей на листе PWE3 ETH'''
 
@@ -148,6 +149,17 @@ list_TNL_GRP = []
 
 list_File = listdir(r'D:\code\Data\20170817')
 print(list_File)
+
+for f in list_File:
+
+    db_date = match(r'(Tunnel_APS)_(\d\d\d\d_\d\d_\d\d_\d\d_\d\d_\d\d).*', f)
+    if db_date is not None:
+        db_name = 'ADI_'
+        db_name = db_name + db_date.group(2)
+        print('db_name = ' + db_name)
+        break
+
+
 for f in list_File:
     print(f)
     file_name = r'D:\code\Data\20170817' + '\\' + f
@@ -442,3 +454,6 @@ for f in list_File:
 
     #for el in list_TNL_GRP:
     #    print(el)
+
+for i in range(len(list_NE)):
+    print(str(i) + '\t' + list_NE[i])
