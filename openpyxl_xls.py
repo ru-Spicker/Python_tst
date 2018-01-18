@@ -1,3 +1,5 @@
+#coding=<utf-8>
+
 import xlrd
 from itertools import groupby
 from os import listdir
@@ -147,7 +149,9 @@ list_CES_Service = []
 list_Tunnel = []
 list_TNL_GRP = []
 
-list_File = listdir(r'D:\code\Data\20170817')
+db_path = r'D:\Data\1'
+
+list_File = listdir(db_path)
 print(list_File)
 
 for f in list_File:
@@ -162,7 +166,9 @@ for f in list_File:
 
 for f in list_File:
     print(f)
-    file_name = r'D:\code\Data\20170817' + '\\' + f
+    if match(r'(Tunnel_APS|Pwe3Service)_(\d\d\d\d_\d\d_\d\d_\d\d_\d\d_\d\d).*', f) is None:
+        continue
+    file_name = db_path + '\\' + f
     rb = xlrd.open_workbook(file_name)
     sheet = rb.sheet_by_name('PWE3 ETH')
     row = sheet.row_values(4)
@@ -455,5 +461,34 @@ for f in list_File:
     #for el in list_TNL_GRP:
     #    print(el)
 
+
+db_file = open(db_path + '\\' + db_name + '.node', 'w')
 for i in range(len(list_NE)):
-    print(str(i) + '\t' + list_NE[i])
+    db_file.write(str(i) + '\t' + list_NE[i] + '\n')
+db_file.close()
+
+
+db_file = open(db_path + '\\' + db_name + '.port', 'w')
+for i in range(len(list_Port)):
+    db_file.write(str(i) + '\t' + list_Port[i] + '\n')
+db_file.close()
+
+db_file = open(db_path + '\\' + db_name + '.description', 'w')
+for i in range(len(list_Port_Description)):
+    tmp_str = '{0}\t{1}\t{2}\t{3}\n'.format(i, list_Port_Description[i][0], list_Port_Description[i][1], list_Port_Description[i][2])
+    db_file.write(tmp_str)
+db_file.close()
+
+'''for ii in list_Port_Description:
+    print(ii)
+
+for i in range(len(list_Port_Description)):
+    tmp_str = '{0}\t{1}\t{2}'.format(list_Port_Description[i][0], list_Port_Description[i][1], list_Port_Description[i][2])
+
+
+    print(tmp_str)'''
+
+
+
+
+
