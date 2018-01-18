@@ -1,3 +1,5 @@
+import json
+
 import xlrd
 from itertools import groupby
 from os import listdir
@@ -156,7 +158,7 @@ list_Tunnel = []
 list_TNL_GRP = []
 db_name = ""
 
-db_path = r'D:\Data\1'
+db_path = r'D:\code\Data\20170817'
 
 list_File = listdir(db_path)
 print(list_File)
@@ -454,29 +456,13 @@ for f in list_File:
         for i in range(len(list_Role)):
             list_TNL_GRP[index_TNL_GRP][3 + TNL_role.get(str(list_Role[i]))] = index_list_Tunnel[i]
 
-db_file = open(db_path + '\\' + db_name + '.node', 'w')
-for i in range(len(list_NE)):
-    db_file.write(str(i) + '\t' + list_NE[i] + '\n')
-db_file.close()
-
-db_file = open(db_path + '\\' + db_name + '.port', 'w')
-for i in range(len(list_Port)):
-    db_file.write(str(i) + '\t' + list_Port[i] + '\n')
-db_file.close()
-
-db_file = open(db_path + '\\' + db_name + '.description', 'w')
-for i in range(len(list_Port_Description)):
-    tmp_str = '{0}\t{1}\t{2}\t{3}\n'.format(i, list_Port_Description[i][0], list_Port_Description[i][1],
-                                            list_Port_Description[i][2])
-    db_file.write(tmp_str)
-db_file.close()
-
-'''for ii in list_Port_Description:
-    print(ii)
-
-for i in range(len(list_Port_Description)):
-    tmp_str = '{0}\t{1}\t{2}'.format(list_Port_Description[i][0], list_Port_Description[i][1],
-     list_Port_Description[i][2])
+json.dump(list_NE, open(db_path + '\\' + db_name + '.node', 'w'))
+json.dump(list_Port, open(db_path + '\\' + db_name + '.port', 'w'))
+json.dump(list_Port_Description, open(db_path + '\\' + db_name + '.description', 'w'))
+json.dump(list_PW, open(db_path + '\\' + db_name + '.pw', 'w'))
+json.dump(list_ETH_Service, open(db_path + '\\' + db_name + '.eth', 'w'))
+json.dump(list_CES_Service, open(db_path + '\\' + db_name + '.ces', 'w'))
+json.dump(list_Tunnel, open(db_path + '\\' + db_name + '.tunnel', 'w'))
+json.dump(list_TNL_GRP, open(db_path + '\\' + db_name + '.group', 'w'))
 
 
-    print(tmp_str)'''
