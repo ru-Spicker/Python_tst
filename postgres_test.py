@@ -1,6 +1,6 @@
 import psycopg2
 import time
-conn = psycopg2.connect(host='192.168.1.164', user='adi_admin', password='Vfgnhj09', dbname='postgres')
+conn = psycopg2.connect(host='192.168.1.164', user='adi_admin', password='12345', dbname='postgres')
 cursor = conn.cursor()
 cursor.execute("SELECT now();")
 for row in cursor:
