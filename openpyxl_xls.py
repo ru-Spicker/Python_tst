@@ -1,5 +1,3 @@
-#coding=<utf-8>
-
 import xlrd
 from itertools import groupby
 from os import listdir
@@ -9,49 +7,48 @@ from re import match
 
 
 def get_columns_num(line, sheet_dict):
-        for i in range(0, len(line), 1):
-            if line[i] in sheet_dict:
-                d2 = {line[i]: i}
-                sheet_dict.update(d2)
-        #print(sheet_dict)
+    for i in range(0, len(line), 1):
+        if line[i] in sheet_dict:
+            d2 = {line[i]: i}
+            sheet_dict.update(d2)
 
 
 '''Добавляем элемент в список проверкой дубликатов, возвращаем индекс'''
 
 
-def add_list_with_check_of_double(list_to_add: object, element: object, start = 0) -> object:
+def add_list_with_check_of_double(list_to_add: list, element: object) -> object:
     try:
         return list_to_add.index(element)
     except ValueError:
         list_to_add.append(element)
-        #print(element)
-        return len(list_to_add)-1
+        return len(list_to_add) - 1
 
 
-def add_list_pw(line, column_list, list_PW, columns):
-    service_PW_list = [str(line[columns.get(column_list[0])]).splitlines(),
+def add_list_pw(line, column_list, list_pw, columns):
+    service_pw_list = [str(line[columns.get(column_list[0])]).splitlines(),
                        str(line[columns.get(column_list[1])]).splitlines(),
                        str(line[columns.get(column_list[2])]).splitlines(),
                        str(line[columns.get(column_list[3])]).splitlines()]
-    list_PW_index = []
+    list_pw_index = []
     '''Проверяем количество туннелей в PW. Может быть два unidirectional'''
-    for i in range(len(service_PW_list[0])):
+    for i in range(len(service_pw_list[0])):
         try:
             tmp_list = []
 
-            if range(len(service_PW_list[3])) == range(len(service_PW_list[0]) * 2):
-                tmp_list.extend([service_PW_list[3][i*2], service_PW_list[3][i*2+1]])
+            if range(len(service_pw_list[3])) == range(len(service_pw_list[0]) * 2):
+                tmp_list.extend([service_pw_list[3][i * 2], service_pw_list[3][i * 2 + 1]])
             else:
-                if (len(service_PW_list[3])) != 0:
-                    print('Некорректное количество туннелей в PW', len(list_PW), service_PW_list)
-                    tmp_list.append(service_PW_list[3][i])
-            list_PW.append([add_list_with_check_of_double(list_NE, service_PW_list[0][i]),
-                            add_list_with_check_of_double(list_NE, service_PW_list[1][i]), service_PW_list[2][i],
+                if (len(service_pw_list[3])) != 0:
+                    print('Некорректное количество туннелей в PW', len(list_pw), service_pw_list)
+                    tmp_list.append(service_pw_list[3][i])
+            list_pw.append([add_list_with_check_of_double(list_NE, service_pw_list[0][i]),
+                            add_list_with_check_of_double(list_NE, service_pw_list[1][i]), service_pw_list[2][i],
                             [el for el, _ in groupby(tmp_list)]])
         except:
-            print('Не удалось разобрать PW', len(list_PW), service_PW_list)
-        list_PW_index.append(len(list_PW) - 1)
-    return list_PW_index
+            print('Не удалось разобрать PW', len(list_pw), service_pw_list)
+        list_pw_index.append(len(list_pw) - 1)
+    return list_pw_index
+
 
 '''
 def add_list_pw_CES(line, column_list, list_PW):
@@ -62,60 +59,69 @@ def add_list_pw_CES(line, column_list, list_PW):
     list_PW_index = []
     for i in range(len(service_PW_list[0])):
         list_PW.append([add_list_with_check_of_double(list_NE, service_PW_list[0][i]),
-                        add_list_with_check_of_double(list_NE, service_PW_list[1][i]), service_PW_list[2][i], service_PW_list[3][i]])
+                        add_list_with_check_of_double(list_NE, service_PW_list[1][i]), service_PW_list[2][i],
+                         service_PW_list[3][i]])
         list_PW_index.append(len(list_PW) - 1)
     return list_PW_index
 '''
 
 
-def show_ETH_service(list_ETH_Service, list_ETH_Service_index):
-    print(list_ETH_Service[list_ETH_Service_index][1], list_ETH_Service[list_ETH_Service_index][0], list_ETH_Service[list_ETH_Service_index][2], list_ETH_Service[list_ETH_Service_index][10])
-    print(list_NE[list_ETH_Service[list_ETH_Service_index][4]], list_Port[list_ETH_Service[list_ETH_Service_index][5]], list_ETH_Service[list_ETH_Service_index][6])
+def show_eth_service(list_eth_service, list_eth_service_index):
+    print(list_eth_service[list_eth_service_index][1], list_eth_service[list_eth_service_index][0],
+          list_eth_service[list_eth_service_index][2], list_eth_service[list_eth_service_index][10])
+    print(list_NE[list_eth_service[list_eth_service_index][4]], list_Port[list_eth_service[list_eth_service_index][5]],
+          list_eth_service[list_eth_service_index][6])
     # Нужно вывести дескрипшен
-    print(list_NE[list_ETH_Service[list_ETH_Service_index][7]], list_Port[list_ETH_Service[list_ETH_Service_index][8]], list_ETH_Service[list_ETH_Service_index][9])
+    print(list_NE[list_eth_service[list_eth_service_index][7]], list_Port[list_eth_service[list_eth_service_index][8]],
+          list_eth_service[list_eth_service_index][9])
     # Нужно вывести дескрипшен
     print('WRK PW')
-    for el in list_ETH_Service[list_ETH_Service_index][11]:
+    for el in list_eth_service[list_eth_service_index][11]:
         print('\t', el, list_NE[list_PW[el][0]], list_NE[list_PW[el][1]], list_PW[el][2], list_PW[el][3])
-    if list_ETH_Service[list_ETH_Service_index][12] != '':
+    if list_eth_service[list_eth_service_index][12] != '':
         print('PRT PW')
-        print('\t', list_NE[list_ETH_Service[list_ETH_Service_index][12]], list_Port[list_ETH_Service[list_ETH_Service_index][13]],
-              list_ETH_Service[list_ETH_Service_index][14])
-        for el in list_ETH_Service[list_ETH_Service_index][15]:
+        print('\t', list_NE[list_eth_service[list_eth_service_index][12]],
+              list_Port[list_eth_service[list_eth_service_index][13]],
+              list_eth_service[list_eth_service_index][14])
+        for el in list_eth_service[list_eth_service_index][15]:
             print('\t', el, list_NE[list_PW[el][0]], list_NE[list_PW[el][1]], list_PW[el][2], list_PW[el][3])
         print('DNI PW')
-        for el in list_ETH_Service[list_ETH_Service_index][16]:
+        for el in list_eth_service[list_eth_service_index][16]:
             print('\t', el, list_NE[list_PW[el][0]], list_NE[list_PW[el][1]], list_PW[el][2], list_PW[el][3])
     print()
 
 
-def show_CES_service(list_CES_Service, list_CES_Service_index):
-
-    print(list_CES_Service[list_CES_Service_index][1], list_CES_Service[list_CES_Service_index][0], list_CES_Service[list_CES_Service_index][2], list_CES_Service[list_CES_Service_index][10])
-    print(list_NE[list_CES_Service[list_CES_Service_index][4]], list_Port[list_CES_Service[list_CES_Service_index][5]], list_CES_Service[list_CES_Service_index][6], list_CES_Service[list_CES_Service_index][7])
+def show_ces_service(list_ces_service, list_ces_service_index):
+    print(list_ces_service[list_ces_service_index][1], list_ces_service[list_ces_service_index][0],
+          list_ces_service[list_ces_service_index][2], list_ces_service[list_ces_service_index][10])
+    print(list_NE[list_ces_service[list_ces_service_index][4]], list_Port[list_ces_service[list_ces_service_index][5]],
+          list_ces_service[list_ces_service_index][6], list_ces_service[list_ces_service_index][7])
     # Нужно вывести дескрипшен
-    print(list_NE[list_CES_Service[list_CES_Service_index][8]], list_Port[list_CES_Service[list_CES_Service_index][9]], list_CES_Service[list_CES_Service_index][10])
+    print(list_NE[list_ces_service[list_ces_service_index][8]], list_Port[list_ces_service[list_ces_service_index][9]],
+          list_ces_service[list_ces_service_index][10])
     # Нужно вывести дескрипшен
     print('WRK PW')
-    for el in list_CES_Service[list_CES_Service_index][13]:
+    for el in list_ces_service[list_ces_service_index][13]:
         print('\t', el, list_NE[list_PW[el][0]], list_NE[list_PW[el][1]], list_PW[el][2], list_PW[el][3])
-    if list_CES_Service[list_CES_Service_index][18] != '':
+    if list_ces_service[list_ces_service_index][18] != '':
         print('PRT PW')
-        print('\t', list_NE[list_CES_Service[list_CES_Service_index][14]], list_Port[list_CES_Service[list_CES_Service_index][15]],
-              list_CES_Service[list_CES_Service_index][16], list_CES_Service[list_CES_Service_index][17])
-        for el in list_CES_Service[list_CES_Service_index][18]:
+        print('\t', list_NE[list_ces_service[list_ces_service_index][14]],
+              list_Port[list_ces_service[list_ces_service_index][15]], list_ces_service[list_ces_service_index][16],
+              list_ces_service[list_ces_service_index][17])
+        for el in list_ces_service[list_ces_service_index][18]:
             print('\t', el, list_NE[list_PW[el][0]], list_NE[list_PW[el][1]], list_PW[el][2], list_PW[el][3])
         print('DNI PW')
-        for el in list_CES_Service[list_CES_Service_index][19]:
+        for el in list_ces_service[list_ces_service_index][19]:
             print('\t', el, list_NE[list_PW[el][0]], list_NE[list_PW[el][1]], list_PW[el][2], list_PW[el][3])
     print()
 
 
-def search_in_list_Tunnel(list, Tunnel):
-    for elem in list:
-        if str(elem[0]) == str(Tunnel):
-            return list.index(elem)
+def search_in_list_tunnel(_list: list, tunnel: object) -> object:
+    for elem in _list:
+        if str(elem[0]) == str(tunnel):
+            return _list.index(elem)
     return None
+
 
 ETH_columns = dict.fromkeys(['ServiceName', 'ServiceID', 'ProtectType1', 'ProtectType2', 'SrcNe', 'SrcPort',
                              'srcPortDescribe', 'SrcVlan', 'SnkNe', 'SnkPort', 'snkPortDescribe', 'SnkVlan',
@@ -148,6 +154,7 @@ list_ETH_Service = []
 list_CES_Service = []
 list_Tunnel = []
 list_TNL_GRP = []
+db_name = ""
 
 db_path = r'D:\Data\1'
 
@@ -163,11 +170,11 @@ for f in list_File:
         print('db_name = ' + db_name)
         break
 
-
 for f in list_File:
-    print(f)
-    if match(r'(Tunnel_APS|Pwe3Service)_(\d\d\d\d_\d\d_\d\d_\d\d_\d\d_\d\d).*', f) is None:
+    if match(r'^(Tunnel_APS|Pwe3Service)_(\d\d\d\d_\d\d_\d\d_\d\d_\d\d_\d\d)_(\d+)\.(xls)$', f) is None:
+        print('Not .xls file:', f)
         continue
+    print('Reading ', f)
     file_name = db_path + '\\' + f
     rb = xlrd.open_workbook(file_name)
     sheet = rb.sheet_by_name('PWE3 ETH')
@@ -176,11 +183,11 @@ for f in list_File:
     get_columns_num(row, ETH_columns)
 
     '''Обрабатываем PWE3 ETH'''
-    for rownum in range(8, sheet.nrows-2, 2):
+    for rownum in range(8, sheet.nrows - 2, 2):
         row = sheet.row_values(rownum)
-        row2 = sheet.row_values(rownum+1)
+        row2 = sheet.row_values(rownum + 1)
         index_SrcPort = add_list_with_check_of_double(list_Port, str(row[ETH_columns.get('SrcPort')]))
-    #    print('{0} - {1} - {2}'.format(index_SrcPort, list_Port[index_SrcPort], row[ETH_columns.get('SrcPort')]))
+        #    print('{0} - {1} - {2}'.format(index_SrcPort, list_Port[index_SrcPort], row[ETH_columns.get('SrcPort')]))
         index_SnkPort = add_list_with_check_of_double(list_Port, str(row[ETH_columns.get('SnkPort')]))
 
         '''Добавляем NE с проверкой дубликатов, получаем индекс'''
@@ -188,17 +195,17 @@ for f in list_File:
         index_SnkNE = add_list_with_check_of_double(list_NE, str(row[ETH_columns.get('SnkNe')]))
 
         '''Добавляем дескрипшены с проверкой дубликатов, получаем индекс'''
-        if (row[ETH_columns.get('srcPortDescribe')] != ''):
+        if row[ETH_columns.get('srcPortDescribe')] != '':
             index_WRK_Src_port_desc = add_list_with_check_of_double(list_Port_Description,
-                                                                    [index_SrcNE, index_SrcPort, str(row[ETH_columns.get('srcPortDescribe')])])
-        if (row[ETH_columns.get('snkPortDescribe')] != ''):
+                                                                    [index_SrcNE, index_SrcPort,
+                                                                     str(row[ETH_columns.get('srcPortDescribe')])])
+        if row[ETH_columns.get('snkPortDescribe')] != '':
             index_WRK_Snk_port_desc = add_list_with_check_of_double(list_Port_Description,
-                                                                    [index_SnkNE, index_SnkPort, str(row[ETH_columns.get('snkPortDescribe')])])
+                                                                    [index_SnkNE, index_SnkPort,
+                                                                     str(row[ETH_columns.get('snkPortDescribe')])])
 
         '''Добавляем PW, без проверки дубликатов, получаем индекс'''
         list_PW_index = add_list_pw(row, ['PwLeftNe', 'PwRightNe', 'PWID', 'Tunnel'], list_PW, ETH_columns)
-
-
 
         '''Добавляем сервис, вносим NE индекс, порт индекс и PW индекс'''
         list_ETH_Service.append([str(row[ETH_columns.get('ServiceName')]),
@@ -215,7 +222,7 @@ for f in list_File:
                                  list_PW_index
                                  ])
         list_ETH_Service_index = len(list_ETH_Service) - 1
-    #    print(list_ETH_Service[list_ETH_Service_index])
+        #    print(list_ETH_Service[list_ETH_Service_index])
 
         '''Если сервис с защитой, добавляем PRT и DNI'''
         try:
@@ -228,46 +235,46 @@ for f in list_File:
                     list_ETH_Service[list_ETH_Service_index].append(index_PRT_SnkPort)
                     list_ETH_Service[list_ETH_Service_index].append(str(row[ETH_columns.get('SnkVlan')]))
 
-                    if (row2[ETH_columns.get('snkPortDescribe')] != ''):
+                    if row2[ETH_columns.get('snkPortDescribe')] != '':
                         index_PRT_Snk_port_desc = add_list_with_check_of_double(list_Port_Description,
                                                                                 [index_PRT_SnkNE, index_PRT_SnkPort,
-                                                                                 str(row[ETH_columns.get('snkPortDescribe')])])
+                                                                                 str(row[ETH_columns.get(
+                                                                                     'snkPortDescribe')])])
                 if list_ETH_Service[list_ETH_Service_index][2] == 2:
                     index_PRT_SrcPort = add_list_with_check_of_double(list_Port, str(row2[ETH_columns.get('SrcPort')]))
                     index_PRT_SrcNE = add_list_with_check_of_double(list_NE, str(row2[ETH_columns.get('SrcNe')]))
                     list_ETH_Service[list_ETH_Service_index].append(index_PRT_SrcNE)
                     list_ETH_Service[list_ETH_Service_index].append(index_PRT_SrcPort)
                     list_ETH_Service[list_ETH_Service_index].append(str(row[ETH_columns.get('SrcVlan')]))
-                    if (row2[ETH_columns.get('srcPortDescribe')] != ''):
+                    if row2[ETH_columns.get('srcPortDescribe')] != '':
                         index_PRT_Src_port_desc = add_list_with_check_of_double(list_Port_Description,
                                                                                 [index_PRT_SrcNE, index_PRT_SrcPort,
-                                                                                 str(row[ETH_columns.get('srcPortDescribe')])])
+                                                                                 str(row[ETH_columns.get(
+                                                                                     'srcPortDescribe')])])
 
                 if list_ETH_Service[list_ETH_Service_index][2] == 3:
                     print('Дописать обработчик PW backup', list_ETH_Service[list_ETH_Service_index])
                 if list_ETH_Service[list_ETH_Service_index][2] == 4:
-                    print('Дописать обработчик PW APS (single source and single sink)', list_ETH_Service[list_ETH_Service_index])
-                    print('Дописать обработчик PW APS (single source and single sink)', list_ETH_Service[list_ETH_Service_index])
+                    print('Дописать обработчик PW APS (single source and single sink)',
+                          list_ETH_Service[list_ETH_Service_index])
+                    print('Дописать обработчик PW APS (single source and single sink)',
+                          list_ETH_Service[list_ETH_Service_index])
                 '''Добавляем PW, без проверки дубликатов, получаем индекс'''
                 list_PRT_PW_index = add_list_pw(row2, ['PwLeftNe', 'PwRightNe', 'PWID', 'Tunnel'], list_PW, ETH_columns)
 
-                list_DNI_PW_index = add_list_pw(row2, ['ApsPwLeftNe', 'ApsPwRightNe', 'APSPWID', 'APSTunnel'], list_PW, ETH_columns)
+                list_DNI_PW_index = add_list_pw(row2, ['ApsPwLeftNe', 'ApsPwRightNe', 'APSPWID', 'APSTunnel'], list_PW,
+                                                ETH_columns)
                 list_ETH_Service[list_ETH_Service_index].append(list_PRT_PW_index)
                 list_ETH_Service[list_ETH_Service_index].append(list_DNI_PW_index)
             else:
-                    list_ETH_Service[list_ETH_Service_index].append('')
-                    list_ETH_Service[list_ETH_Service_index].append('')
-                    list_ETH_Service[list_ETH_Service_index].append('')
-                    list_ETH_Service[list_ETH_Service_index].append('')
+                list_ETH_Service[list_ETH_Service_index].append('')
+                list_ETH_Service[list_ETH_Service_index].append('')
+                list_ETH_Service[list_ETH_Service_index].append('')
+                list_ETH_Service[list_ETH_Service_index].append('')
 
         except:
             print('Необработанный тип сервиса', list_ETH_Service[list_ETH_Service_index])
     '''Вывод ETH сервиса'''
-    #    show_ETH_service(list_ETH_Service, list_ETH_Service_index)
-
-    #for el in list_ETH_Service:
-    #   print(el)
-
 
     sheet = rb.sheet_by_name('PWE3 CES')
     row = sheet.row_values(4)
@@ -275,9 +282,9 @@ for f in list_File:
     get_columns_num(row, CES_columns)
 
     '''Обрабатываем PWE3 CES'''
-    for rownum in range(8, sheet.nrows-2, 2):
+    for rownum in range(8, sheet.nrows - 2, 2):
         row = sheet.row_values(rownum)
-        row2 = sheet.row_values(rownum+1)
+        row2 = sheet.row_values(rownum + 1)
         index_SrcPort = add_list_with_check_of_double(list_Port, str(row[CES_columns.get('SrcPort')]))
         # print('{0} - {1} - {2}'.format(index_SrcPort, list_Port[index_SrcPort], row[CES_columns.get('SrcPort')]))
         index_SnkPort = add_list_with_check_of_double(list_Port, str(row[CES_columns.get('SnkPort')]))
@@ -289,15 +296,15 @@ for f in list_File:
         '''Добавляем дескрипшены с проверкой дубликатов, получаем индекс'''
         if row[CES_columns.get('srcPortDescribe')] != '':
             index_WRK_Src_port_desc = add_list_with_check_of_double(list_Port_Description,
-                                                                    [index_SrcNE, index_SrcPort, str(row[CES_columns.get('srcPortDescribe')])])
+                                                                    [index_SrcNE, index_SrcPort,
+                                                                     str(row[CES_columns.get('srcPortDescribe')])])
         if row[CES_columns.get('snkPortDescribe')] != '':
             index_WRK_Snk_port_desc = add_list_with_check_of_double(list_Port_Description,
-                                                                    [index_SnkNE, index_SnkPort, str(row[CES_columns.get('snkPortDescribe')])])
+                                                                    [index_SnkNE, index_SnkPort,
+                                                                     str(row[CES_columns.get('snkPortDescribe')])])
 
         '''Добавляем PW, без проверки дубликатов, получаем индекс'''
         list_PW_index = add_list_pw(row, ['PwLeftNe', 'PwRightNe', 'PWID', 'Tunnel'], list_PW, CES_columns)
-
-
 
         '''Добавляем сервис, вносим NE индекс, порт индекс и PW индекс'''
         list_CES_Service.append([str(row[CES_columns.get('ServiceName')]),
@@ -316,7 +323,7 @@ for f in list_File:
                                  list_PW_index
                                  ])
         list_CES_Service_index = len(list_CES_Service) - 1
-    #    print(list_CES_Service[list_CES_Service_index])
+        #    print(list_CES_Service[list_CES_Service_index])
 
         '''Если сервис с защитой, добавляем PRT и DNI'''
         if list_CES_Service[list_CES_Service_index][2] > 0:
@@ -329,10 +336,11 @@ for f in list_File:
                 list_CES_Service[list_CES_Service_index].append(str(row[CES_columns.get('SnkHighPath')]))
                 list_CES_Service[list_CES_Service_index].append(str(row[CES_columns.get('SnkLowPath')]))
 
-                if (row2[CES_columns.get('snkPortDescribe')] != ''):
+                if row2[CES_columns.get('snkPortDescribe')] != '':
                     index_PRT_Snk_port_desc = add_list_with_check_of_double(list_Port_Description,
                                                                             [index_PRT_SnkNE, index_PRT_SnkPort,
-                                                                             str(row[CES_columns.get('snkPortDescribe')])])
+                                                                             str(row[CES_columns.get(
+                                                                                 'snkPortDescribe')])])
             if list_CES_Service[list_CES_Service_index][2] == 2:
                 index_PRT_SrcPort = add_list_with_check_of_double(list_Port, str(row2[CES_columns.get('SrcPort')]))
                 index_PRT_SrcNE = add_list_with_check_of_double(list_NE, str(row2[CES_columns.get('SrcNe')]))
@@ -340,10 +348,11 @@ for f in list_File:
                 list_CES_Service[list_CES_Service_index].append(index_PRT_SrcPort)
                 list_CES_Service[list_CES_Service_index].append(str(row[CES_columns.get('SrcHighPath')]))
                 list_CES_Service[list_CES_Service_index].append(str(row[CES_columns.get('SrcLowPath')]))
-                if (row2[CES_columns.get('srcPortDescribe')] != ''):
+                if row2[CES_columns.get('srcPortDescribe')] != '':
                     index_PRT_Src_port_desc = add_list_with_check_of_double(list_Port_Description,
                                                                             [index_PRT_SrcNE, index_PRT_SrcPort,
-                                                                             str(row[CES_columns.get('srcPortDescribe')])])
+                                                                             str(row[CES_columns.get
+                                                                                                 ('srcPortDescribe')])])
 
             if list_CES_Service[list_CES_Service_index][2] == 3:
                 print('Дописать обработчик PW backup')
@@ -353,22 +362,18 @@ for f in list_File:
             '''Добавляем PW, без проверки дубликатов, получаем индекс'''
             list_PRT_PW_index = add_list_pw(row2, ['PwLeftNe', 'PwRightNe', 'PWID', 'Tunnel'], list_PW, CES_columns)
 
-            list_DNI_PW_index = add_list_pw(row2, ['ApsPwLeftNe', 'ApsPwRightNe', 'APSPWID', 'APSTunnel'], list_PW, CES_columns)
+            list_DNI_PW_index = add_list_pw(row2, ['ApsPwLeftNe', 'ApsPwRightNe', 'APSPWID', 'APSTunnel'], list_PW,
+                                            CES_columns)
             list_CES_Service[list_CES_Service_index].append(list_PRT_PW_index)
             list_CES_Service[list_CES_Service_index].append(list_DNI_PW_index)
 
         else:
-                list_CES_Service[list_CES_Service_index].append('')
-                list_CES_Service[list_CES_Service_index].append('')
-                list_CES_Service[list_CES_Service_index].append('')
-                list_CES_Service[list_CES_Service_index].append('')
-                list_CES_Service[list_CES_Service_index].append('')
-                list_CES_Service[list_CES_Service_index].append('')
-
-    #    show_CES_service(list_CES_Service, list_CES_Service_index)
-
-    #for el in list_CES_Service:
-    #    print(el)
+            list_CES_Service[list_CES_Service_index].append('')
+            list_CES_Service[list_CES_Service_index].append('')
+            list_CES_Service[list_CES_Service_index].append('')
+            list_CES_Service[list_CES_Service_index].append('')
+            list_CES_Service[list_CES_Service_index].append('')
+            list_CES_Service[list_CES_Service_index].append('')
 
     sheet = rb.sheet_by_name('Static CR Tunnel')
     row = sheet.row_values(4)
@@ -376,7 +381,7 @@ for f in list_File:
     get_columns_num(row, TNL_columns)
 
     '''Обрабатываем Static CR Tunnel'''
-    for rownum in range(8, sheet.nrows-3):
+    for rownum in range(8, sheet.nrows - 3):
         row = sheet.row_values(rownum)
         index_SrcPort = add_list_with_check_of_double(list_Port, str(row[TNL_columns.get('SrcPort')]))
         # print('{0} - {1} - {2}'.format(index_SrcPort, list_Port[index_SrcPort], row[TNL_columns.get('SrcPort')]))
@@ -412,16 +417,13 @@ for f in list_File:
                             index_TransitInPort,
                             index_TransitOutPort))
 
-    #for el in list_Tunnel:
-    #    print(list_Tunnel.index(el), el)
-
     sheet = rb.sheet_by_name('Tunnel Protection Group')
     row = sheet.row_values(4)
     """ Опрделяем номера столбцов для нужных полей на листе Tunnel Protection Group"""
     get_columns_num(row, TNL_GRP_columns)
 
     '''Обрабатываем Tunnel Protection Group'''
-    for rownum in range(8, sheet.nrows-3):
+    for rownum in range(8, sheet.nrows - 3):
         row = sheet.row_values(rownum)
         index_SrcNE = []
         index_SnkNE = []
@@ -438,7 +440,7 @@ for f in list_File:
 
         for el in str(row[TNL_GRP_columns.get('Tunnel')]).splitlines():
             try:
-                index_list_Tunnel.append(search_in_list_Tunnel(list_Tunnel, el))
+                index_list_Tunnel.append(search_in_list_tunnel(list_Tunnel, el))
             except ValueError:
                 print('\t\tОшибка! Нет Tunnel')
                 continue
@@ -446,27 +448,16 @@ for f in list_File:
         list_Role = str(row[TNL_GRP_columns.get('Role')]).splitlines()
 
         list_TNL_GRP.append([str(row[TNL_GRP_columns.get('ApsName')]),
-                            index_SrcNE,
-                            index_SnkNE,
-                            '',
-                            '',
-                            '',
-                            ''])
-        index_TNL_GRP = len(list_TNL_GRP)-1
+                             index_SrcNE, index_SnkNE, '', '', '', ''])
+        index_TNL_GRP = len(list_TNL_GRP) - 1
 
         for i in range(len(list_Role)):
             list_TNL_GRP[index_TNL_GRP][3 + TNL_role.get(str(list_Role[i]))] = index_list_Tunnel[i]
-
-
-    #for el in list_TNL_GRP:
-    #    print(el)
-
 
 db_file = open(db_path + '\\' + db_name + '.node', 'w')
 for i in range(len(list_NE)):
     db_file.write(str(i) + '\t' + list_NE[i] + '\n')
 db_file.close()
-
 
 db_file = open(db_path + '\\' + db_name + '.port', 'w')
 for i in range(len(list_Port)):
@@ -475,7 +466,8 @@ db_file.close()
 
 db_file = open(db_path + '\\' + db_name + '.description', 'w')
 for i in range(len(list_Port_Description)):
-    tmp_str = '{0}\t{1}\t{2}\t{3}\n'.format(i, list_Port_Description[i][0], list_Port_Description[i][1], list_Port_Description[i][2])
+    tmp_str = '{0}\t{1}\t{2}\t{3}\n'.format(i, list_Port_Description[i][0], list_Port_Description[i][1],
+                                            list_Port_Description[i][2])
     db_file.write(tmp_str)
 db_file.close()
 
@@ -483,12 +475,8 @@ db_file.close()
     print(ii)
 
 for i in range(len(list_Port_Description)):
-    tmp_str = '{0}\t{1}\t{2}'.format(list_Port_Description[i][0], list_Port_Description[i][1], list_Port_Description[i][2])
+    tmp_str = '{0}\t{1}\t{2}'.format(list_Port_Description[i][0], list_Port_Description[i][1],
+     list_Port_Description[i][2])
 
 
     print(tmp_str)'''
-
-
-
-
-
