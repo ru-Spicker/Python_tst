@@ -1,4 +1,5 @@
 import json
+import sys
 
 import xlrd
 from itertools import groupby
@@ -158,7 +159,13 @@ list_Tunnel = []
 list_TNL_GRP = []
 db_name = ""
 
-db_path = r'D:\code\Data\20170817'
+if __name__ == "__main__":
+    if len(sys.argv) > 1:
+        db_path = sys.argv[1]
+        print("DB path = ", db_path)
+    else:
+        db_path = ''
+        exit("Missing param db path")
 
 list_File = listdir(db_path)
 print(list_File)
