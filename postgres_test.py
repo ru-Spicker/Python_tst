@@ -13,7 +13,7 @@ cursor.execute("GRANT ALL privileges ON DATABASE adi_test TO adi_admin;")
 cursor.close()
 conn.close()
 
-conn = psycopg2.connect(host='192.168.1.164', user='adi_admin', password='Vfgnhj09', dbname='adi_test')
+conn = psycopg2.connect(host='192.168.1.164', user='adi_admin', password='12345', dbname='adi_test')
 cursor = conn.cursor()
 
 cursor.execute("CREATE TABLE ne (ne_id INTEGER PRIMARY KEY, ne_name VARCHAR);")
@@ -34,7 +34,7 @@ cursor.close()
 conn.close()
 
 
-conn = psycopg2.connect(host='192.168.1.164', user='adi_admin', password='Vfgnhj09', dbname='postgres')
+conn = psycopg2.connect(host='192.168.1.164', user='adi_admin', password='12345', dbname='postgres')
 cursor = conn.cursor()
 cursor.execute("COMMIT;")
 cursor.execute("DROP DATABASE adi_test;")
