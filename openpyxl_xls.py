@@ -195,94 +195,100 @@ for f in list_File:
     for rownum in range(8, sheet.nrows - 2, 2):
         row = sheet.row_values(rownum)
         row2 = sheet.row_values(rownum + 1)
-        index_SrcPort = add_list_with_check_of_double(list_Port, str(row[ETH_columns.get('SrcPort')]))
+        index_SrcPort = add_list_with_check_of_double(list_Port, str(row[ETH_columns['SrcPort']]))
         #    print('{0} - {1} - {2}'.format(index_SrcPort, list_Port[index_SrcPort], row[ETH_columns.get('SrcPort')]))
-        index_SnkPort = add_list_with_check_of_double(list_Port, str(row[ETH_columns.get('SnkPort')]))
+        index_SnkPort = add_list_with_check_of_double(list_Port, str(row[ETH_columns['SnkPort']]))
 
         '''Добавляем NE с проверкой дубликатов, получаем индекс'''
-        index_SrcNE = add_list_with_check_of_double(list_NE, str(row[ETH_columns.get('SrcNe')]))
-        index_SnkNE = add_list_with_check_of_double(list_NE, str(row[ETH_columns.get('SnkNe')]))
+        index_SrcNE = add_list_with_check_of_double(list_NE, str(row[ETH_columns['SrcNe']]))
+        index_SnkNE = add_list_with_check_of_double(list_NE, str(row[ETH_columns['SnkNe']]))
 
         '''Добавляем дескрипшены с проверкой дубликатов, получаем индекс'''
         if row[ETH_columns.get('srcPortDescribe')] != '':
             index_WRK_Src_port_desc = add_list_with_check_of_double(list_Port_Description,
                                                                     [index_SrcNE, index_SrcPort,
-                                                                     str(row[ETH_columns.get('srcPortDescribe')])])
+                                                                     str(row[ETH_columns['srcPortDescribe']])])
         if row[ETH_columns.get('snkPortDescribe')] != '':
             index_WRK_Snk_port_desc = add_list_with_check_of_double(list_Port_Description,
                                                                     [index_SnkNE, index_SnkPort,
-                                                                     str(row[ETH_columns.get('snkPortDescribe')])])
+                                                                     str(row[ETH_columns['snkPortDescribe']])])
 
         '''Добавляем PW, без проверки дубликатов, получаем индекс'''
         list_PW_index = add_list_pw(row, ['PwLeftNe', 'PwRightNe', 'PWID', 'Tunnel'], list_PW, ETH_columns)
 
         '''Добавляем сервис, вносим NE индекс, порт индекс и PW индекс'''
-        list_ETH_Service.append([str(row[ETH_columns.get('ServiceName')]),
-                                 str(row[ETH_columns.get('ServiceID')]),
-                                 PRT_type1.get(str(row[ETH_columns.get('ProtectType1')])),
-                                 PRT_type2.get(str(row[ETH_columns.get('ProtectType2')])),
-                                 index_SrcNE,
-                                 index_SrcPort,
-                                 str(row[ETH_columns.get('SrcVlan')]),
-                                 index_SnkNE,
-                                 index_SnkPort,
-                                 str(row[ETH_columns.get('SnkVlan')]),
-                                 str(row[ETH_columns.get('CustomerSvrType')]),
-                                 list_PW_index
-                                 ])
+        list_ETH_Service.append({'ServiceName': str(row[ETH_columns['ServiceName']]),
+                                 'ServiceID': str(row[ETH_columns['ServiceID']]),
+                                 'ProtectType1': PRT_type1.get(str(row[ETH_columns['ProtectType1']])),
+                                 'ProtectType2': PRT_type2.get(str(row[ETH_columns['ProtectType2']])),
+                                 'SrcNE': index_SrcNE,
+                                 'SrcPort': index_SrcPort,
+                                 'SrcVlan': str(row[ETH_columns['SrcVlan']]),
+                                 'SnkNE': index_SnkNE,
+                                 'SnkPort': index_SnkPort,
+                                 'SnkVlan': str(row[ETH_columns['SnkVlan']]),
+                                 'CustomerSvrType': str(row[ETH_columns['CustomerSvrType']]),
+                                 'list_PW_index': list_PW_index
+                                 })
         list_ETH_Service_index = len(list_ETH_Service) - 1
         #    print(list_ETH_Service[list_ETH_Service_index])
 
         '''Если сервис с защитой, добавляем PRT и DNI'''
-        try:
-            if list_ETH_Service[list_ETH_Service_index][2] > 0:
-                '''PW APS (single source and dual sink)'''
-                if list_ETH_Service[list_ETH_Service_index][2] == 1:
-                    index_PRT_SnkPort = add_list_with_check_of_double(list_Port, str(row2[ETH_columns.get('SnkPort')]))
-                    index_PRT_SnkNE = add_list_with_check_of_double(list_NE, str(row2[ETH_columns.get('SnkNe')]))
-                    list_ETH_Service[list_ETH_Service_index].append(index_PRT_SnkNE)
-                    list_ETH_Service[list_ETH_Service_index].append(index_PRT_SnkPort)
-                    list_ETH_Service[list_ETH_Service_index].append(str(row[ETH_columns.get('SnkVlan')]))
+        #try:
+        if list_ETH_Service[list_ETH_Service_index]['ProtectType1'] > 0:
+            '''PW APS (single source and dual sink)'''
+            if list_ETH_Service[list_ETH_Service_index]['ProtectType1'] == 1:
+                index_PRT_SnkPort = add_list_with_check_of_double(list_Port, str(row2[ETH_columns['SnkPort']]))
+                index_PRT_SnkNE = add_list_with_check_of_double(list_NE, str(row2[ETH_columns['SnkNe']]))
+                list_ETH_Service[list_ETH_Service_index]['PRT_SnkNE'] = index_PRT_SnkNE
+                list_ETH_Service[list_ETH_Service_index]['PRT_SnkPort'] = index_PRT_SnkPort
+                list_ETH_Service[list_ETH_Service_index]['PRT_SnkVlan'] = str(row[ETH_columns['SnkVlan']])
 
-                    if row2[ETH_columns.get('snkPortDescribe')] != '':
-                        index_PRT_Snk_port_desc = add_list_with_check_of_double(list_Port_Description,
-                                                                                [index_PRT_SnkNE, index_PRT_SnkPort,
-                                                                                 str(row[ETH_columns.get(
-                                                                                     'snkPortDescribe')])])
-                if list_ETH_Service[list_ETH_Service_index][2] == 2:
-                    index_PRT_SrcPort = add_list_with_check_of_double(list_Port, str(row2[ETH_columns.get('SrcPort')]))
-                    index_PRT_SrcNE = add_list_with_check_of_double(list_NE, str(row2[ETH_columns.get('SrcNe')]))
-                    list_ETH_Service[list_ETH_Service_index].append(index_PRT_SrcNE)
-                    list_ETH_Service[list_ETH_Service_index].append(index_PRT_SrcPort)
-                    list_ETH_Service[list_ETH_Service_index].append(str(row[ETH_columns.get('SrcVlan')]))
-                    if row2[ETH_columns.get('srcPortDescribe')] != '':
-                        index_PRT_Src_port_desc = add_list_with_check_of_double(list_Port_Description,
-                                                                                [index_PRT_SrcNE, index_PRT_SrcPort,
-                                                                                 str(row[ETH_columns.get(
-                                                                                     'srcPortDescribe')])])
+                if row2[ETH_columns['snkPortDescribe']] != '':
+                    index_PRT_Snk_port_desc = add_list_with_check_of_double(list_Port_Description,
+                                                                            {'NE': index_PRT_SnkNE,
+                                                                             'port': index_PRT_SnkPort,
+                                                                             'description': str(row[ETH_columns[
+                                                                                 'snkPortDescribe']])})
+            if list_ETH_Service[list_ETH_Service_index]['ProtectType1'] == 2:
+                index_PRT_SrcPort = add_list_with_check_of_double(list_Port, str(row2[ETH_columns['SrcPort']]))
+                index_PRT_SrcNE = add_list_with_check_of_double(list_NE, str(row2[ETH_columns['SrcNe']]))
+                list_ETH_Service[list_ETH_Service_index]['PRT_SrcNE'] = index_PRT_SrcNE
+                list_ETH_Service[list_ETH_Service_index]['PRT_SrcPort'] = index_PRT_SrcPort
+                list_ETH_Service[list_ETH_Service_index]['PRT_SrcVlan'] = str(row[ETH_columns['SrcVlan']])
+                if row2[ETH_columns.get('srcPortDescribe')] != '':
+                    index_PRT_Src_port_desc = add_list_with_check_of_double(list_Port_Description,
+                                                                            {'NE': index_PRT_SrcNE,
+                                                                             'port': index_PRT_SrcPort,
+                                                                             'description':str(row[ETH_columns[
+                                                                                 'srcPortDescribe']])})
 
-                if list_ETH_Service[list_ETH_Service_index][2] == 3:
-                    print('Дописать обработчик PW backup', list_ETH_Service[list_ETH_Service_index])
-                if list_ETH_Service[list_ETH_Service_index][2] == 4:
-                    print('Дописать обработчик PW APS (single source and single sink)',
-                          list_ETH_Service[list_ETH_Service_index])
-                    print('Дописать обработчик PW APS (single source and single sink)',
-                          list_ETH_Service[list_ETH_Service_index])
-                '''Добавляем PW, без проверки дубликатов, получаем индекс'''
-                list_PRT_PW_index = add_list_pw(row2, ['PwLeftNe', 'PwRightNe', 'PWID', 'Tunnel'], list_PW, ETH_columns)
+            if list_ETH_Service[list_ETH_Service_index]['ProtectType1'] == 3:
+                print('Дописать обработчик PW backup', list_ETH_Service[list_ETH_Service_index])
+            if list_ETH_Service[list_ETH_Service_index]['ProtectType1'] == 4:
+                print('Дописать обработчик PW APS (single source and single sink)',
+                      list_ETH_Service[list_ETH_Service_index])
+                print('Дописать обработчик PW APS (single source and single sink)',
+                      list_ETH_Service[list_ETH_Service_index])
+            '''Добавляем PW, без проверки дубликатов, получаем индекс'''
+            list_PRT_PW_index = add_list_pw(row2, ['PwLeftNe', 'PwRightNe', 'PWID', 'Tunnel'], list_PW, ETH_columns)
 
-                list_DNI_PW_index = add_list_pw(row2, ['ApsPwLeftNe', 'ApsPwRightNe', 'APSPWID', 'APSTunnel'], list_PW,
-                                                ETH_columns)
-                list_ETH_Service[list_ETH_Service_index].append(list_PRT_PW_index)
-                list_ETH_Service[list_ETH_Service_index].append(list_DNI_PW_index)
-            else:
-                list_ETH_Service[list_ETH_Service_index].append('')
-                list_ETH_Service[list_ETH_Service_index].append('')
-                list_ETH_Service[list_ETH_Service_index].append('')
-                list_ETH_Service[list_ETH_Service_index].append('')
+            list_DNI_PW_index = add_list_pw(row2, ['ApsPwLeftNe', 'ApsPwRightNe', 'APSPWID', 'APSTunnel'], list_PW,
+                                            ETH_columns)
+            list_ETH_Service[list_ETH_Service_index]['list_PRT_PW'] = list_PRT_PW_index
+            list_ETH_Service[list_ETH_Service_index]['list_DNI_PW'] = list_DNI_PW_index
+        else:
 
-        except:
-            print('Необработанный тип сервиса', list_ETH_Service[list_ETH_Service_index])
+            list_ETH_Service[list_ETH_Service_index]['ApsPwLeftNe'] = ''
+            list_ETH_Service[list_ETH_Service_index]['ApsPwRightNe'] = ''
+            list_ETH_Service[list_ETH_Service_index]['APSPWID'] = ''
+            list_ETH_Service[list_ETH_Service_index]['APSTunnel'] = ''
+            list_ETH_Service[list_ETH_Service_index]['list_PRT_PW'] = None
+            list_ETH_Service[list_ETH_Service_index]['list_DNI_PW'] = None
+
+
+        #except:
+            #print('Необработанный тип сервиса', list_ETH_Service[list_ETH_Service_index])
     '''Вывод ETH сервиса'''
 
     sheet = rb.sheet_by_name('PWE3 CES')
