@@ -316,19 +316,19 @@ for f in list_File:
         list_PW_index = add_list_pw(row, ['PwLeftNe', 'PwRightNe', 'PWID', 'Tunnel'], list_PW, CES_columns)
 
         '''Добавляем сервис, вносим NE индекс, порт индекс и PW индекс'''
-        list_CES_Service.append([str(row[CES_columns.get('ServiceName')]),
-                                 str(row[CES_columns.get('ServiceID')]),
-                                 PRT_type1.get(str(row[CES_columns.get('ProtectType1')])),
-                                 PRT_type2.get(str(row[CES_columns.get('ProtectType2')])),
+        list_CES_Service.append([str(row[CES_columns['ServiceName']]),
+                                 str(row[CES_columns['ServiceID']]),
+                                 PRT_type1.get(str(row[CES_columns['ProtectType1']])),
+                                 PRT_type2.get(str(row[CES_columns['ProtectType2']])),
                                  index_SrcNE,
                                  index_SrcPort,
-                                 str(row[CES_columns.get('SrcHighPath')]),
-                                 str(row[CES_columns.get('SrcLowPath')]),
+                                 str(row[CES_columns['SrcHighPath']]),
+                                 str(row[CES_columns['SrcLowPath']]),
                                  index_SnkNE,
                                  index_SnkPort,
-                                 str(row[CES_columns.get('SnkHighPath')]),
-                                 str(row[CES_columns.get('SnkLowPath')]),
-                                 str(row[CES_columns.get('CustomerSvrType')]),
+                                 str(row[CES_columns['SnkHighPath']]),
+                                 str(row[CES_columns['SnkLowPath']]),
+                                 str(row[CES_columns['CustomerSvrType']]),
                                  list_PW_index
                                  ])
         list_CES_Service_index = len(list_CES_Service) - 1
