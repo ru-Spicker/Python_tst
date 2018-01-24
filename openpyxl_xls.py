@@ -457,14 +457,14 @@ for f in list_File:
         list_Role = str(row[TNL_GRP_columns.get('Role')]).splitlines()
 
         list_TNL_GRP.append([str(row[TNL_GRP_columns.get('ApsName')]),
-                             index_SrcNE, index_SnkNE, '', '', '', ''])
+                             index_SrcNE, index_SnkNE, None, None, None, None])
         index_TNL_GRP = len(list_TNL_GRP) - 1
 
         for i in range(len(list_Role)):
             list_TNL_GRP[index_TNL_GRP][3 + TNL_role.get(str(list_Role[i]))] = index_list_Tunnel[i]
 
-for i in range(len(list_Port_Description)):
-    print(i, list_Port_Description[i])
+for i in range(len(list_TNL_GRP)):
+    print(i, list_TNL_GRP[i])
 json.dump(list_NE, open(db_path + '\\' + db_name + '.node', 'w'))
 json.dump(list_Port, open(db_path + '\\' + db_name + '.port', 'w'))
 json.dump(list_Port_Description, open(db_path + '\\' + db_name + '.description', 'w'))

@@ -19,7 +19,6 @@ def createParser():
 def insert_in_table(cursor: object, insert_list: list, start_str: str, pack_len: int):
     list_argument = []
     list_sub_arg = []
-    arg_str = ''
     for i in range(0, len(insert_list) - 1, pack_len):
         str_select = start_str
         for ii in range(i, ((i + pack_len) if (i + pack_len) < len(insert_list) else len(insert_list)), 1):
@@ -30,8 +29,6 @@ def insert_in_table(cursor: object, insert_list: list, start_str: str, pack_len:
                 list_argument.append(str(ii) + ", " + ", ".join(list_sub_arg))
             else:
                 list_argument.append(str(ii) + ", " + to_arg(insert_list[ii]))
-
-
         str_select = str_select + "), (".join(list_argument) + ");"
         list_argument = []
         print(i, ii)
@@ -47,13 +44,19 @@ def to_arg(arg: object):
             result = "'" + arg + "'"
         else:
             if type(arg) == list:
-                result = "["
-                for i in range(len(arg)-2):
-                    result = result + to_arg(arg[i]) + ","
-                result = result + to_arg(arg[len(arg)-1]) + "]"
+                if len(arg) > 0:
+                    result = "'{"
+                    for i in range(0, len(arg)-2):
+                        result = result + to_arg(arg[i]) + ","
+                    result = result + to_arg(arg[len(arg)-1]) + "}'"
+                else:
+                    result = "'{}'"
             else:
-                print(type(arg))
-                result = None
+                if arg is None:
+                    result = "NULL"
+                else:
+                    print(type(arg))
+                    result = None
     return result
 
 
@@ -144,25 +147,70 @@ cursor.execute("COMMIT;")
 cursor.execute("CREATE TABLE adi_ne (id INTEGER PRIMARY KEY, ne_name VARCHAR);")
 cursor.execute("CREATE TABLE adi_port (id INTEGER PRIMARY KEY, port VARCHAR);")
 cursor.execute("""CREATE TABLE adi_description (id INTEGER PRIMARY KEY, 
-                                                ne_id INTEGER REFERENCES ADI_NE,
-                                                port_id INTEGER REFERENCES ADI_NE,
+                                                ne_id INTEGER REFERENCES adi_ne,
+                                                port_id INTEGER REFERENCES adi_port,
                                                 description VARCHAR);""")
+cursor.execute("""CREATE TABLE adi_tunnel (id INTEGER PRIMARY KEY,
+                                            tunnel VARCHAR,
+                                            tunnel_id VARCHAR,
+                                            direction VARCHAR,
+                                            src_ne_id INTEGER REFERENCES adi_ne,
+                                            src_port_id INTEGER REFERENCES adi_port, 
+                                            snk_ne_id INTEGER REFERENCES adi_ne,
+                                            snk_port_id INTEGER REFERENCES adi_port, 
+                                            transit_ne_id INTEGER[],
+                                            transit_in_port_id INTEGER[], 
+                                            transit_out_port_id INTEGER[] 
+                                            );""")
+cursor.execute("""CREATE TABLE adi_group (id INTEGER PRIMARY KEY,
+                                            aps_name VARCHAR,
+                                            src_ne_id INTEGER REFERENCES adi_ne,
+                                            snk_ne_id INTEGER REFERENCES adi_ne,
+                                            wrk_fwd_wrk INTEGER REFERENCES adi_tunnel,
+                                            prt_fwd_prt INTEGER REFERENCES adi_tunnel,
+                                            bwd_wrk INTEGER REFERENCES adi_tunnel,
+                                            bwd_prt INTEGER REFERENCES adi_tunnel
+                                            );""")
 cursor.execute("COMMIT;")
 
-print("len(list_Port_Description)", len(list_Port_Description))
-print(list_Port_Description)
+print("len(list_Tunnel)", len(list_Tunnel))
+print(list_Tunnel)
 
 insert_in_table(cursor, list_NE, "INSERT INTO adi_ne (id , ne_name) VALUES (", db_packet_len)
 insert_in_table(cursor, list_Port, "INSERT INTO adi_port (id , port) VALUES (", db_packet_len)
-insert_in_table(cursor, list_Port_Description, "INSERT INTO adi_description (id, ne_id, port_id, description) VALUES (", db_packet_len)
+insert_in_table(cursor, list_Port_Description, """INSERT INTO adi_description (id, ne_id,
+                                                                    port_id, description) VALUES (""", db_packet_len)
+insert_in_table(cursor, list_Tunnel, """INSERT INTO adi_tunnel (id,
+                                            tunnel,
+                                            tunnel_id,
+                                            direction,
+                                            src_ne_id,
+                                            src_port_id, 
+                                            snk_ne_id,
+                                            snk_port_id, 
+                                            transit_ne_id,
+                                            transit_in_port_id, 
+                                            transit_out_port_id 
+                                            ) VALUES (""", db_packet_len)
+insert_in_table(cursor, list_TNL_GRP, """INSERT INTO adi_group (id,
+                                            aps_name,
+                                            src_ne_id,
+                                            snk_ne_id,
+                                            wrk_fwd_wrk,
+                                            prt_fwd_prt,
+                                            bwd_wrk,
+                                            bwd_prt
+                                            ) VALUES (""", db_packet_len)
 
-cursor.execute("select * from adi_description;")
+cursor.execute("select * from adi_group;")
 try:
     data = cursor.fetchall()
     for row in data:
         print(row)
 except psycopg2.ProgrammingError:
     print("No data to out")
+print("len(list_TNL_GRP)", len(list_TNL_GRP))
+print(list_TNL_GRP)
 
 
 '''conn = psycopg2.connect(host=namespace.host, user=namespace.user, password=namespace.password, dbname='postgres')
