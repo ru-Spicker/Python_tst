@@ -13,17 +13,40 @@ def createParser():
     parser.add_argument('--user', nargs='?')
     parser.add_argument('--password', nargs='?')
     parser.add_argument('--path', nargs='?')
-
     return parser
 
-def to_arg(arg :object):
+
+def insert_in_table(cursor: object, insert_list: list, start_str: str, pack_len: int):
+    list_argument = []
+    list_sub_arg = []
+    arg_str = ''
+    for i in range(0, len(insert_list) - 1, pack_len):
+        str_select = start_str
+        for ii in range(i, ((i + pack_len) if (i + pack_len) < len(insert_list) else len(insert_list)), 1):
+            if type(insert_list[ii]) == list:
+                list_sub_arg = []
+                for el in insert_list[ii]:
+                    list_sub_arg.append(to_arg(el))
+                list_argument.append(str(ii) + ", " + ", ".join(list_sub_arg))
+            else:
+                list_argument.append(str(ii) + ", " + to_arg(insert_list[ii]))
+
+
+        str_select = str_select + "), (".join(list_argument) + ");"
+        list_argument = []
+        print(i, ii)
+        print(str_select)
+        cursor.execute(str_select)
+
+
+def to_arg(arg: object):
     if type(arg) == int:
         result = str(arg)
     else:
         if type(arg) == str:
             result = "'" + arg + "'"
         else:
-            if type(arg) == "list":
+            if type(arg) == list:
                 result = "["
                 for i in range(len(arg)-2):
                     result = result + to_arg(arg[i]) + ","
@@ -45,7 +68,6 @@ list_CES = []
 list_Tunnel = []
 list_TNL_GRP = []
 db_packet_len = 100
-list_argument = []
 
 
 if __name__ == '__main__':
@@ -119,22 +141,22 @@ conn = psycopg2.connect(host=namespace.host, user=namespace.user, password=names
 cursor = conn.cursor()
 
 cursor.execute("COMMIT;")
-cursor.execute("CREATE TABLE ne (id INTEGER PRIMARY KEY, ne_name VARCHAR);")
+cursor.execute("CREATE TABLE adi_ne (id INTEGER PRIMARY KEY, ne_name VARCHAR);")
+cursor.execute("CREATE TABLE adi_port (id INTEGER PRIMARY KEY, port VARCHAR);")
+cursor.execute("""CREATE TABLE adi_description (id INTEGER PRIMARY KEY, 
+                                                ne_id INTEGER REFERENCES ADI_NE,
+                                                port_id INTEGER REFERENCES ADI_NE,
+                                                description VARCHAR);""")
 cursor.execute("COMMIT;")
 
-for i in range(0, len(list_NE) - 1, db_packet_len):
-    str_select = "INSERT INTO ne (id , ne_name) VALUES ("
-    for ii in range(i, ((i + db_packet_len) if (i + db_packet_len) < len(list_NE) else len(list_NE) - 1), 1):
-        # str_select = "INSERT INTO ne (id , ne_name) VALUES ({0}, '{1}');".format(i, list_NE[i])
-        list_argument.append(str(ii) + ", " + to_arg(list_NE[ii]))
+print("len(list_Port_Description)", len(list_Port_Description))
+print(list_Port_Description)
 
-    str_select = str_select + "), (".join(list_argument) + ");"
-    list_argument = []
-    print(i, ii)
-    print(str_select)
-    cursor.execute(str_select)
+insert_in_table(cursor, list_NE, "INSERT INTO adi_ne (id , ne_name) VALUES (", db_packet_len)
+insert_in_table(cursor, list_Port, "INSERT INTO adi_port (id , port) VALUES (", db_packet_len)
+insert_in_table(cursor, list_Port_Description, "INSERT INTO adi_description (id, ne_id, port_id, description) VALUES (", db_packet_len)
 
-cursor.execute("select * from ne;")
+cursor.execute("select * from adi_description;")
 try:
     data = cursor.fetchall()
     for row in data:

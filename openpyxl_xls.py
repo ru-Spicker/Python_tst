@@ -408,12 +408,12 @@ for f in list_File:
         list_TransitInPort = str(row[TNL_columns.get('TransitInPort')]).splitlines()
         index_TransitInPort = []
         for el in list_TransitInPort:
-            index_TransitInPort.append(add_list_with_check_of_double(list_NE, el))
+            index_TransitInPort.append(add_list_with_check_of_double(list_Port, el))
 
         list_TransitOutPort = str(row[TNL_columns.get('TransitOutPort')]).splitlines()
         index_TransitOutPort = []
         for el in list_TransitOutPort:
-            index_TransitOutPort.append(add_list_with_check_of_double(list_NE, el))
+            index_TransitOutPort.append(add_list_with_check_of_double(list_Port, el))
 
         list_Tunnel.append((str(row[TNL_columns.get('Tunnel')]),
                             str(row[TNL_columns.get('TunnelID')]),
@@ -463,6 +463,8 @@ for f in list_File:
         for i in range(len(list_Role)):
             list_TNL_GRP[index_TNL_GRP][3 + TNL_role.get(str(list_Role[i]))] = index_list_Tunnel[i]
 
+for i in range(len(list_Port_Description)):
+    print(i, list_Port_Description[i])
 json.dump(list_NE, open(db_path + '\\' + db_name + '.node', 'w'))
 json.dump(list_Port, open(db_path + '\\' + db_name + '.port', 'w'))
 json.dump(list_Port_Description, open(db_path + '\\' + db_name + '.description', 'w'))
