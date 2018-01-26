@@ -45,10 +45,10 @@ def to_arg(arg: object):
         else:
             if type(arg) == list:
                 if len(arg) > 0:
-                    result = "'{"
+                    result = "ARRAY["
                     for i in range(0, len(arg)-2):
                         result = result + to_arg(arg[i]) + ","
-                    result = result + to_arg(arg[len(arg)-1]) + "}'"
+                    result = result + to_arg(arg[len(arg)-1]) + "]"
                 else:
                     result = "'{}'"
             else:
@@ -119,21 +119,9 @@ cursor = conn.cursor()
 cursor.execute("COMMIT;")
 str_select = "CREATE DATABASE {0};".format(db_file_list[0]['name'])
 print(str_select)
-try:
-    data = cursor.fetchall()
-    for row in data:
-        print(row)
-except psycopg2.ProgrammingError:
-    print("No data to out")
 cursor.execute(str_select)
 str_select = "GRANT ALL privileges ON DATABASE {0} TO adi_admin;".format(db_file_list[0]['name'])
 print(str_select)
-try:
-    data = cursor.fetchall()
-    for row in data:
-        print(row)
-except psycopg2.ProgrammingError:
-    print("No data to out")
 cursor.execute(str_select)
 cursor.close()
 conn.close()
@@ -171,6 +159,50 @@ cursor.execute("""CREATE TABLE adi_group (id INTEGER PRIMARY KEY,
                                             bwd_wrk INTEGER REFERENCES adi_tunnel,
                                             bwd_prt INTEGER REFERENCES adi_tunnel
                                             );""")
+cursor.execute("""CREATE TABLE adi_pw (id INTEGER PRIMARY KEY, 
+                                            right_ne_id INTEGER REFERENCES adi_ne,
+                                            left_ne_id INTEGER REFERENCES adi_ne,
+                                            pw_id VARCHAR,
+                                            tunnels VARCHAR[]);""")
+cursor.execute("""CREATE TABLE adi_eth (id INTEGER PRIMARY KEY, 
+                                            name VARCHAR,
+                                            service_id VARCHAR,
+                                            protect_type1 INTEGER,
+                                            protect_type2 INTEGER,
+                                            src_ne_id INTEGER REFERENCES adi_ne,
+                                            src_port_id INTEGER REFERENCES adi_port, 
+                                            src_vlan VARCHAR,
+                                            snk_ne_id INTEGER REFERENCES adi_ne,
+                                            snk_port_id INTEGER REFERENCES adi_port, 
+                                            snk_vlan VARCHAR,
+                                            cust_srv_type VARCHAR,
+                                            wrk_pw_id INTEGER[],
+                                            prt_ne_id INTEGER REFERENCES adi_ne,
+                                            prt_port_id INTEGER REFERENCES adi_port, 
+                                            prt_vlan VARCHAR,
+                                            prt_pw_id INTEGER[],
+                                            dni_pw_id INTEGER[]);""")
+cursor.execute("""CREATE TABLE adi_ces (id INTEGER PRIMARY KEY, 
+                                            name VARCHAR,
+                                            service_id VARCHAR,
+                                            protect_type1 INTEGER,
+                                            protect_type2 INTEGER,
+                                            src_ne_id INTEGER REFERENCES adi_ne,
+                                            src_port_id INTEGER REFERENCES adi_port, 
+                                            src_high_path VARCHAR,
+                                            src_low_path VARCHAR,
+                                            snk_ne_id INTEGER REFERENCES adi_ne,
+                                            snk_port_id INTEGER REFERENCES adi_port, 
+                                            snk_high_path VARCHAR,
+                                            snk_low_path VARCHAR,
+                                            cust_srv_type VARCHAR,
+                                            wrk_pw_id INTEGER[],
+                                            prt_ne_id INTEGER REFERENCES adi_ne,
+                                            prt_port_id INTEGER REFERENCES adi_port, 
+                                            prt_high_path VARCHAR,
+                                            prt_low_path VARCHAR,
+                                            prt_pw_id INTEGER[],
+                                            dni_pw_id INTEGER[]);""")
 cursor.execute("COMMIT;")
 
 print("len(list_Tunnel)", len(list_Tunnel))
@@ -202,7 +234,51 @@ insert_in_table(cursor, list_TNL_GRP, """INSERT INTO adi_group (id,
                                             bwd_prt
                                             ) VALUES (""", db_packet_len)
 
-cursor.execute("select * from adi_group;")
+insert_in_table(cursor, list_PW, """INSERT INTO adi_pw (id, right_ne_id,
+                                                                    left_ne_id, pw_id, tunnels) VALUES (""", db_packet_len)
+
+insert_in_table(cursor, list_ETH, """INSERT INTO adi_eth (id,
+                                            name,
+                                            service_id,
+                                            protect_type1,
+                                            protect_type2,
+                                            src_ne_id,
+                                            src_port_id, 
+                                            src_vlan,
+                                            snk_ne_id,
+                                            snk_port_id, 
+                                            snk_vlan,
+                                            cust_srv_type,
+                                            wrk_pw_id,
+                                            prt_ne_id,
+                                            prt_port_id, 
+                                            prt_vlan,
+                                            prt_pw_id,
+                                            dni_pw_id) VALUES (""", db_packet_len)
+insert_in_table(cursor, list_CES, """INSERT INTO adi_ces (id,
+                                            name,
+                                            service_id,
+                                            protect_type1,
+                                            protect_type2,
+                                            src_ne_id,
+                                            src_port_id, 
+                                            src_high_path,
+                                            src_low_path,
+                                            snk_ne_id,
+                                            snk_port_id, 
+                                            snk_high_path,
+                                            snk_low_path,
+                                            cust_srv_type,
+                                            wrk_pw_id,
+                                            prt_ne_id,
+                                            prt_port_id, 
+                                            prt_high_path,
+                                            prt_low_path,
+                                            prt_pw_id,
+                                            dni_pw_id) VALUES (""", db_packet_len)
+
+
+cursor.execute("select * from adi_ces;")
 try:
     data = cursor.fetchall()
     for row in data:

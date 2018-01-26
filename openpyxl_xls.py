@@ -276,10 +276,11 @@ for f in list_File:
                 list_ETH_Service[list_ETH_Service_index].append(list_PRT_PW_index)
                 list_ETH_Service[list_ETH_Service_index].append(list_DNI_PW_index)
             else:
-                list_ETH_Service[list_ETH_Service_index].append('')
-                list_ETH_Service[list_ETH_Service_index].append('')
-                list_ETH_Service[list_ETH_Service_index].append('')
-                list_ETH_Service[list_ETH_Service_index].append('')
+                list_ETH_Service[list_ETH_Service_index].append(None)
+                list_ETH_Service[list_ETH_Service_index].append(None)
+                list_ETH_Service[list_ETH_Service_index].append(None)
+                list_ETH_Service[list_ETH_Service_index].append(None)
+                list_ETH_Service[list_ETH_Service_index].append(None)
 
         except:
             print('Необработанный тип сервиса', list_ETH_Service[list_ETH_Service_index])
@@ -377,12 +378,12 @@ for f in list_File:
             list_CES_Service[list_CES_Service_index].append(list_DNI_PW_index)
 
         else:
-            list_CES_Service[list_CES_Service_index].append('')
-            list_CES_Service[list_CES_Service_index].append('')
-            list_CES_Service[list_CES_Service_index].append('')
-            list_CES_Service[list_CES_Service_index].append('')
-            list_CES_Service[list_CES_Service_index].append('')
-            list_CES_Service[list_CES_Service_index].append('')
+            list_CES_Service[list_CES_Service_index].append(None)
+            list_CES_Service[list_CES_Service_index].append(None)
+            list_CES_Service[list_CES_Service_index].append(None)
+            list_CES_Service[list_CES_Service_index].append(None)
+            list_CES_Service[list_CES_Service_index].append(None)
+            list_CES_Service[list_CES_Service_index].append(None)
 
     sheet = rb.sheet_by_name('Static CR Tunnel')
     row = sheet.row_values(4)
